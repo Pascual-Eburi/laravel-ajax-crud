@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('job_position');
+            $table->string('avatar');
+            $table->date('date_hired');
             $table->timestamps();
         });
     }
