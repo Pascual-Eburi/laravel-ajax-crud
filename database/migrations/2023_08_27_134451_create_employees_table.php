@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('first_name', 20);
             $table->string('last_name', 40);
-            $table->string('email');
-            $table->string('phone', 15);
+            $table->string('email')->unique();
+            $table->string('phone', 15)->unique();
             $table->string('job_position', 50);
             $table->string('avatar');
             $table->date('date_hired');
