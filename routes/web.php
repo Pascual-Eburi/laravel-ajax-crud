@@ -19,10 +19,9 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::get('employes', [EmployeeController::class, 'index'])->name('list');
-Route::post('/store', [EmployeeController::class, 'store'])->name('store');
-Route::get('/fetchall', [EmployeeController::class, 'index'])->name('fetchAll');
-Route::delete('/delete', [EmployeeController::class, 'delete'])->name('delete');
-Route::get('/edit', [EmployeeController::class, 'edit'])->name('edit');
-Route::post('/update', [EmployeeController::class, 'update'])->name('update');
+Route::get('employes', [EmployeeController::class, 'index'])->name('list'); // get list of employees
+Route::post('/store', [EmployeeController::class, 'store'])->name('store'); // add new employee to database
+Route::get('/edit', [EmployeeController::class, 'edit'])->name('edit'); // get single employee
+Route::post('/update', [EmployeeController::class, 'update'])->name('update'); // update employee data
+Route::delete('/delete', [EmployeeController::class, 'delete'])->name('delete'); // delete employee
 
