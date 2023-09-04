@@ -24,6 +24,11 @@ class EmployeeController extends Controller{
         
     ];
 
+
+    /**
+     * Handle employee list ajax request
+     */
+
     public function index(){
         // get all employees
         $result = array('data' => array());
@@ -75,17 +80,9 @@ class EmployeeController extends Controller{
 
 
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create(){
-        //
-    }
-
-
 
     /**
-     * Store a newly created resource in storage.
+     * Handle a create employee ajax request
      */
     public function store(Request $request){
         // validator
@@ -128,17 +125,12 @@ class EmployeeController extends Controller{
 		
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Employee $employee){
-        //
-    }
+
 
     /**
      * Handle get single employee ajax request.
      */
-    public function edit(Request $request){
+    public function show(Request $request){
         // find employeee
         try {
             $id = $request->id;
@@ -158,7 +150,7 @@ class EmployeeController extends Controller{
     }
 
     /**
-     * Update the specified resource in storage.
+     * Handle update employee ajax request.
      */
     public function update(Request $request){
         //delete avatar
@@ -231,7 +223,7 @@ class EmployeeController extends Controller{
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Handle delete employee ajax request.
      */
     public function destroy(Request $request){
         //
