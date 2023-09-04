@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller{
@@ -19,7 +20,8 @@ class EmployeeController extends Controller{
         'phone' => 'required|max:15',
         'job_position' => 'required|max:50',
         'date_hired' => 'required|date|before_or_equal:today',
-        'avatar' => 'required|file|mimes:jpg,gif,png',
+        'avatar' => 'required|file|mimes:jpg,gif,png'
+        
     ];
 
     public function index(){
@@ -43,9 +45,9 @@ class EmployeeController extends Controller{
             // buttons for actions
             $buttons = '                
             <td>
-            <a href="#" id="' . $employee->id . '" class="text-success mx-1 editIcon" data-bs-toggle="modal" data-bs-target="#editEmployeeModal"><i class="bi-pencil-square h4"></i></a>
+            <a href="#" data-employee-id="' . $employee->id . '" class="text-success mx-1 editIcon" data-bs-toggle="modal" data-bs-target="#editEmployeeModal"><i class="bi-pencil-square h4"></i></a>
 
-            <a href="#" id="' . $employee->id . '" class="text-danger mx-1 deleteIcon"><i class="bi-trash h4"></i></a>
+            <a href="#" data-employee-id="' . $employee->id . '" class="text-danger mx-1 deleteIcon"><i class="bi-trash h4"></i></a>
           </td>';
 
           
@@ -87,6 +89,7 @@ class EmployeeController extends Controller{
      */
     public function store(Request $request){
         // validator
+
         $validator = Validator::make($request->all(), $this->rules);
 
         // stop validating as soon as we found a validation error 
@@ -133,26 +136,118 @@ class EmployeeController extends Controller{
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Handle get single employee ajax request.
      */
-    public function edit(Employee $employee)
-    {
-        //
+    public function edit(Request $request){
+        // find employeee
+        try {
+            $id = $request->id;
+            $employee = Employee::find($id);
+    
+            return response()->json($employee);
+            
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json([
+                'status' => 404,
+                'message' => $th->getMessage()
+            ]);
+        }
+      
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Employee $employee)
-    {
-        //
+    public function update(Request $request){
+        //delete avatar
+        $file_name = '';
+        // find employeee
+        try {
+            $employee = Employee::find($request->emp_id);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json([
+                'status' => 404,
+                'message' => $th->getMessage()
+            ]);
+        }
+
+
+        if (!$request->hasFile('avatar')){
+            $this->rules['avatar'] = '';
+            $file_name = $request->emp_avatar;
+        }
+
+        // validate employee data
+        $validator = Validator::make($request->all(), $this->rules);
+
+        // stop validating as soon as we found a validation error 
+        if ($validator->stopOnFirstFailure()->fails()) {
+            return json_encode($validator->validated()['errors']);
+            
+        }
+
+        // so on, everithing ok, 
+
+        if ( $request->hasFile('avatar') ){
+            
+            $file = $request->file('avatar');
+            $file_name = time() . '.' . $file->getClientOriginalExtension();
+
+            $file->storeAs('public/images', $file_name);
+
+            // delete old avatar in the storage
+            if ( $employee->avatar ){
+                Storage::delete('public/images/'. $employee->avatar);
+
+            }
+
+        }
+
+
+        $employee_data = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $file_name
+        ];
+
+        // udate employee data
+        try {
+            
+            $employee->update($employee_data);
+            return response()->json([
+                'status' => 200,
+                'message' => 'Employee updated successfully successfully'
+            ]);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 400,
+                'message' => $th->getMessage()
+            ]);
+        }
+
+
+        
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Employee $employee)
-    {
+    public function destroy(Request $request){
         //
+        
+        try {
+            $employee = Employee::find($request->id);
+            if (Storage::delete('public/images/' . $employee->avatar)){
+                Employee::destroy($request->id);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json([
+                'status' => 404,
+                'message' => $th->getMessage()
+            ]);
+        }
+        
     }
 }
