@@ -36,8 +36,8 @@ class EmployeeController extends Controller{
 
         // if no employees found
         if ($employees->count() <= 0){
-            echo json_encode($result);
-            return;
+            return  json_encode($result);
+
         }
 
         // found employees
@@ -74,8 +74,8 @@ class EmployeeController extends Controller{
 
 
 
-        echo json_encode($result);
-        return ;
+        return json_encode($result);
+        ;
     }
 
 

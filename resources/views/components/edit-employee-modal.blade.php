@@ -14,27 +14,27 @@
         <div class="row">
             <div class="col-md-6">
               <label for="first_name">First Name</label>
-              <input type="text" name="first_name" class="form-control" placeholder="First Name">
+              <input type="text" name="first_name" id="edit_fn" class="form-control" placeholder="First Name">
             </div>
             <div class="col-md-6">
               <label for="last_name">Last Name</label>
-              <input type="text" name="last_name" class="form-control" placeholder="Last Name">
+              <input type="text" name="last_name" id="edit_ln" class="form-control" placeholder="Last Name">
             </div>
             <div class="my-2 col-12">
               <label for="email">E-mail</label>
-              <input type="email" name="email" class="form-control" placeholder="E-mail">
+              <input type="email" name="email" id="edit_email" class="form-control" placeholder="E-mail">
             </div>
             <div class="col-md-6">
               <label for="phone">Phone</label>
-              <input type="tel" name="phone" class="form-control" placeholder="Phone">
+              <input type="tel" name="phone" id="edit_phone" class="form-control" placeholder="Phone">
             </div>
             <div class="col-md-6">
               <label for="job_position">Job Position</label>
-              <input type="text" name="job_position" class="form-control" placeholder="MERN developer...">
+              <input type="text" name="job_position" id="edit_jp" class="form-control" placeholder="MERN developer...">
             </div>
             <div class="col-md-5 my-2">
               <label for="date_hired">Date hired</label>
-              <input type="date" name="date_hired" class="form-control" >
+              <input type="date" name="date_hired" id="edit_dh" class="form-control" >
             </div>
             <div class="col-md-7 my-2">
               <label for="avatar">Select Avatar</label>

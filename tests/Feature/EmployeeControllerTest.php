@@ -6,15 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class EmployeeControllerTest extends TestCase
-{
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
-    {
-        $response = $this->get('/');
+class EmployeeControllerTest extends TestCase{
 
-        $response->assertStatus(200);
-    }
 }
