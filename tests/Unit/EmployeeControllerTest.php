@@ -3,13 +3,10 @@
 namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Eloquent\Factories\Factory; 
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Employee; // Asegúrate de importar el modelo Employee
 
-class EmployeeControllerTest extends TestCase
-{
+class EmployeeControllerTest extends TestCase{
     use RefreshDatabase;
 
     /**
