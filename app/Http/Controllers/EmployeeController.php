@@ -45,7 +45,8 @@ class EmployeeController extends Controller{
         $today = new DateTime( date('Y-m-d') );
         foreach ($employees as $employee){
             $index++;
-            $photo = '<img src="storage/images/' . $employee->avatar . '" width="60" height="60" class="img-thumbnail rounded-circle" style="aspect-ratio:1/1;object-fit: cover;">';
+            # storage/images/'
+            $photo = '<img src="'.$employee->avatar.'" width="60" height="60" class="img-thumbnail rounded-circle" style="aspect-ratio:1/1;object-fit: cover;">';
             
             // buttons for actions
             $buttons = '                
@@ -96,22 +97,24 @@ class EmployeeController extends Controller{
         }
         
 
-        $file = $request->file('avatar');
-        $extension = strtolower($file->extension()) ;
+        # $file = $request->file('avatar');
+        $path = $request->file('avatar')->store('avatars');
+        # $extension = strtolower($file->extension()) ;
 
 
-		$fileName = time() . '.' . $extension;
+		# $fileName = time() . '.' . $extension;
 
-		$file->storeAs('public/images', $fileName);
+		# $file->storeAs('public/images', $fileName);
 
-		$employeeData = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $fileName];
+		$employeeData = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $path];
 		
         try {
             
-            Employee::create($employeeData);
+            $employee = Employee::create($employeeData);
             return response()->json([
-                'status' => 200,
-                'message' => 'Employee added successfully'
+                'status' => 201,
+                'message' => 'Employee added successfully',
+                'employee' => $employee
             ]);
 
         } catch (\Throwable $th) {
