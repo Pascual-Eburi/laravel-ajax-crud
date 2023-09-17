@@ -12,13 +12,12 @@ class EmployeeControllerTest extends TestCase{
     /**
      * @test
      */
-    public function it_can_get_all_employees(){
+    public function test_it_can_get_all_employees(){
         $employee1 = Employee::factory()->create();
         $employee2 = Employee::factory()->create();
 
         $response = $this->get('employes');
         $data = json_decode($response->getContent(), true);
-
         $this->assertCount(2, $data['data']);
         $this->assertEquals($employee1->email, $data['data'][0][3]);
         $this->assertEquals($employee2->email, $data['data'][1][3]);
@@ -27,7 +26,7 @@ class EmployeeControllerTest extends TestCase{
     /**
      * @test
      */
-    public function it_does_not_return_employees_when_none_exist(){
+    public function test_it_does_not_return_employees_when_none_exist(){
         $response = $this->get('employes');
         $data = json_decode($response->getContent(), true);
         $this->assertEmpty($data['data']);
