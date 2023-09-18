@@ -138,15 +138,17 @@ class EmployeeController extends Controller{
         try {
             $id = $request->id;
             $employee = Employee::find($id);
-    
-            return response()->json($employee);
+            if ($employee){
+                return response()->json($employee);
+            }
+            
+            return response()->json(['message' => "Employee not found"],404);
             
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json([
-                'status' => 404,
                 'message' => $th->getMessage()
-            ]);
+            ], 500);
         }
       
 
