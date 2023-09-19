@@ -163,12 +163,16 @@ class EmployeeController extends Controller{
         // find employeee
         try {
             $employee = Employee::find($request->emp_id);
+            if(!$employee){
+                return response()->json([
+                'message' => "Employee not found"
+            ], 404);
+            }
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json([
-                'status' => 404,
                 'message' => $th->getMessage()
-            ]);
+            ], 500);
         }
 
 
@@ -183,7 +187,6 @@ class EmployeeController extends Controller{
         // stop validating as soon as we found a validation error 
         if ($validator->stopOnFirstFailure()->fails()) {
             return json_encode($validator->validated()['errors']);
-            
         }
 
         // so on, everithing ok, 
@@ -232,18 +235,23 @@ class EmployeeController extends Controller{
      */
     public function destroy(Request $request){
         //
-        
         try {
             $employee = Employee::find($request->id);
+            if(!$employee || $employee === null){
+                return response()->json([
+                    'message' => 'Employee Not Found',
+                ], 404);
+            }
+
             if (Storage::delete('public/images/' . $employee->avatar)){
                 Employee::destroy($request->id);
             }
+
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json([
-                'status' => 404,
                 'message' => $th->getMessage()
-            ]);
+            ], 500);
         }
         
     }
