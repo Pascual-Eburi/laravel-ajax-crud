@@ -166,7 +166,7 @@ class EmployeeController extends Controller{
             if(!$employee){
                 return response()->json([
                 'message' => "Employee not found"
-            ], 404);
+                ], 404);
             }
         } catch (\Throwable $th) {
             //throw $th;
@@ -193,15 +193,10 @@ class EmployeeController extends Controller{
 
         if ( $request->hasFile('avatar') ){
             
-            $file = $request->file('avatar');
-            $file_name = time() . '.' . $file->getClientOriginalExtension();
-
-            $file->storeAs('public/images', $file_name);
-
+            $file_name = $request->file('avatar')->store('avatars');
             // delete old avatar in the storage
             if ( $employee->avatar ){
-                Storage::delete('public/images/'. $employee->avatar);
-
+                Storage::delete('public/avatars/'. $employee->avatar);
             }
 
         }
@@ -215,15 +210,13 @@ class EmployeeController extends Controller{
             
             $employee->update($employee_data);
             return response()->json([
-                'status' => 200,
                 'message' => 'Employee updated successfully successfully'
             ]);
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => 400,
                 'message' => $th->getMessage()
-            ]);
+            ], 500);
         }
 
 
