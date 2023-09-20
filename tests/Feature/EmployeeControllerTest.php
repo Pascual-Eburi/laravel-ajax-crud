@@ -112,68 +112,46 @@ class EmployeeControllerTest extends TestCase
         );
     }
 
+        
+    /**--------------------------------------------------------
+     *  Delete method tests
+     *--------------------------------------*/
 
-    public function test_it_can_destroy_an_employee()
-    {
-        // Crea un empleado de ejemplo en la base de datos
-        $employee = factory(Employee::class)->create();
+    public function test_it_can_destroy_an_employee(){
 
-        // Realiza una solicitud DELETE al endpoint de eliminar empleado
-        $response = $this->json('DELETE', "/delete", ['id' => $employee->id]);
+        $employee = Employee::factory()->create();
+        $this->json('DELETE', "/delete", ['id' => $employee->id])
+                    ->assertStatus(200);
 
-        // Verifica que la respuesta sea exitosa (código de estado 200)
-        $response->assertStatus(200);
-
-        // Verifica que el empleado se haya eliminado de la base de datos
         $this->assertDatabaseMissing('employees', [
             'id' => $employee->id,
         ]);
 
-        // Verifica que el archivo de avatar se haya eliminado del almacenamiento simulado
         Storage::disk('public')->assertMissing('images/' . $employee->avatar);
     }
 
     /**
      * @test
      */
-    public function it_returns_error_for_non_existing_employee()
-    {
-        // Proporciona un ID de empleado que no existe en la base de datos
+    public function it_returns_error_for_non_existing_employee(){
+
         $nonExistingEmployeeId = 999;
-
-        // Realiza una solicitud DELETE al endpoint de eliminar empleado con el ID no válido
-        $response = $this->json('DELETE', "/delete", ['id'=>$nonExistingEmployeeId]);
-
-        // Verifica que la respuesta contenga un código de estado 404 (not found)
-        $response->assertStatus(404);
-
-        // Verifica que la respuesta contenga un mensaje de error en formato JSON
-        $response->assertJson([
-            'message' => 'Employee Not Found',
-        ]);
+        $this->json('DELETE', "/delete", ['id'=>$nonExistingEmployeeId])
+                ->assertStatus(404)
+                ->assertJson([
+                    'message' => 'Employee Not Found',
+                ]);
     }
 
     /**
      * @test
      */
-    public function it_returns_error_for_internal_server_error()
-    {
-        // Simula un error interno al eliminar el empleado (puedes ajustar esta lógica según tu necesidad)
-        $this->mock(Storage::class, function ($mock) {
-            $mock->shouldReceive('delete')->andReturn(false);
-        });
+    public function it_returns_error_for_internal_server_error(){
 
-        // Crea un empleado de ejemplo en la base de datos
-        $employee = factory(Employee::class)->create();
-
-        // Realiza una solicitud DELETE al endpoint de eliminar empleado
-        $response = $this->json('DELETE', "/delete" , ['id' => $employee->id]);
-
-        $response->assertStatus(500);
-        $response->assertJson(
-            fn (AssertableJson $json) =>
-            $json->has('message')
-        );
+        $employee = Employee::factory()->create();
+        $this->json('DELETE', "/delete" , ['id' => $employee])
+                    ->assertStatus(500)
+                    ->assertJson( fn (AssertableJson $json) => $json->has('message') );
     }
 
 }
