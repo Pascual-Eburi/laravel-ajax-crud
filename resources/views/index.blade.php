@@ -84,9 +84,8 @@
           beforeSend: function(){
             $("#add_employee_btn").text('Adding...');
           },
-          success: function(response) {
-            console.log(response)
-            if (response.status === 200) {
+          success: function(response, textStatus, jqXHR) {
+            if (jqXHR.status === 201) {
               employeesTable.ajax.reload(null, false);
 
               $("#add_employee_form")[0].reset();
@@ -98,7 +97,6 @@
             
           },
           error: function(response){
-            //console.log(Object.keys(response.responseJSON.errors)[0], response.responseJSON)
               // check form validation errors
               if (response.status === 422){
                 const error = response.responseJSON.message || 'Error while validatig your data';
@@ -125,12 +123,16 @@
       $(document).on('click', '.editIcon', function(e) {
         e.preventDefault();
         let id = $(this).attr('data-employee-id');
+        
         $.ajax({
           url: '{{ route("edit") }}',
           method: 'get',
           data: {
             id: id,
             _token: '{{ csrf_token() }}'
+          },
+          beforeSend: function(){
+            $("#editEmployeeModal").modal('hide');
           },
           success: function(response) {
             $("#edit_fn").val(response.first_name);
@@ -143,6 +145,16 @@
               `<img src="storage/images/${response.avatar}" width="100" class="img-fluid img-thumbnail">`);
             $("#emp_id").val(response.id);
             $("#emp_avatar").val(response.avatar);
+            $("#editEmployeeModal").modal('show');
+          },
+          error: function (response){
+                 
+                const error = response.responseJSON.message || 'Error while validatig your data';
+                const title = response.statusText || 'Something went wrong';
+                Swal.fire(title, error,'error' );
+
+                return
+
           }
         });
       });
@@ -163,9 +175,9 @@
           beforeSend: function(){
             $("#edit_employee_btn").text('Updating...');
           },
-          success: function(response) {
+          success: function(response, textStatus, jqXHR) {
             console.log(response)
-            if (response.status === 200) {
+            if (jqXHR.status === 200) {
               employeesTable.ajax.reload(null, false);
 
               $("#edit_employee_form")[0].reset();
@@ -178,19 +190,12 @@
           },
           error: function(response){
             console.log(response)
-
-            //console.log(Object.keys(response.responseJSON.errors)[0], response.responseJSON)
-              // check form validation errors
-              if (response.status === 422){
                 const error = response.responseJSON.message || 'Error while validatig your data';
                 const title = response.statusText || 'Something went wrong';
                 Swal.fire(title, error,'error' );
 
                 return
-              }
-
-              Swal.fire('Something went wrong', 'Error while trying to update the data','error' );
-
+              
 
           },
           complete: function(){
@@ -223,7 +228,6 @@
                 _token: csrf
               },
               success: function(response) {
-                console.log(response);
                 Swal.fire(
                   'Deleted!',
                   'The employee has been deleted.',
@@ -231,16 +235,11 @@
                 )
                 employeesTable.ajax.reload(null, false);
               }, 
-              error: function(e){
-                console.log(e)
-                if (response.status === 404){
+              error: function(response){
+
                 const error = response.responseJSON.message || 'Error while validatig your data';
                 const title = response.statusText || 'Something went wrong';
                 Swal.fire(title, error,'error' );
-
-              }
-
-              Swal.fire('Something went wrong', 'Error while trying to delete the data','error' );
 
               }
             });
