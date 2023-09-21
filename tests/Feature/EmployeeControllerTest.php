@@ -116,15 +116,33 @@ class EmployeeControllerTest extends TestCase
     /**===============================================
      * Update method tests
      =====================================================*/
-    public function test_it_can_update_an_employee_with_new_avatar() {
+    public function test_it_can_update_an_employee_with_old_avatar(){
         $employee = Employee::factory()->create();
+        $newData = [
+            'emp_id' => $employee->id,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'email' => $this->faker->email,
+            'phone' => $this->faker->phoneNumber,
+            'job_position' => $this->faker->jobTitle,
+            'date_hired' => $this->faker->date,
+            'emp_avatar' => $employee->avatar,
+        ];
 
+        $this->json('POST', '/update', $newData)
+                ->assertStatus(200)
+                ->assertJson(['message' => 'Employee updated successfully successfully']);
+        $this->assertDatabaseHas('employees',[
+            'id' => $employee->id,
+            'avatar' => $employee->avatar
+        ]);
+    }
+    
+     public function test_it_can_update_an_employee_with_new_avatar() {
+        $employee = Employee::factory()->create();
         Storage::fake('local');
-
         $file = UploadedFile::fake()->image('new_avatar.jpg');
         $file_name = $file->hashName();
-
-
         $newData = [
             'emp_id' => $employee->id,
             'first_name' => $this->faker->firstName,
@@ -224,7 +242,7 @@ class EmployeeControllerTest extends TestCase
             'id' => $employee->id,
         ]);
 
-        Storage::disk('public')->assertMissing('images/' . $employee->avatar);
+        Storage::disk('public')->assertMissing('avatars/' . $employee->avatar);
     }
 
     /**
