@@ -46,12 +46,13 @@ class EmployeeController extends Controller{
         foreach ($employees as $employee){
             $index++;
             # storage/images/'
-            $photo = '<img src="'.$employee->avatar.'" width="60" height="60" class="img-thumbnail rounded-circle" style="aspect-ratio:1/1;object-fit: cover;">';
+            $photo = '<img src="' . asset('public/storage/' . $employee->avatar) . '" width="60" height="60" class="img-thumbnail rounded-circle" style="aspect-ratio:1/1;object-fit: cover;">';
             
             // buttons for actions
+            // data-bs-toggle="modal" data-bs-target="#editEmployeeModal"
             $buttons = '                
             <td>
-            <a href="#" data-employee-id="' . $employee->id . '" class="text-success mx-1 editIcon" data-bs-toggle="modal" data-bs-target="#editEmployeeModal"><i class="bi-pencil-square h4"></i></a>
+            <a href="#" data-employee-id="' . $employee->id . '" class="text-success mx-1 editIcon" ><i class="bi-pencil-square h4"></i></a>
 
             <a href="#" data-employee-id="' . $employee->id . '" class="text-danger mx-1 deleteIcon"><i class="bi-trash h4"></i></a>
           </td>';
@@ -97,31 +98,20 @@ class EmployeeController extends Controller{
         }
         
 
-        # $file = $request->file('avatar');
         $path = $request->file('avatar')->store('avatars');
-        # $extension = strtolower($file->extension()) ;
-
-
-		# $fileName = time() . '.' . $extension;
-
-		# $file->storeAs('public/images', $fileName);
-
 		$employeeData = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $path];
 		
         try {
             
             $employee = Employee::create($employeeData);
             return response()->json([
-                'status' => 201,
                 'message' => 'Employee added successfully',
-                'employee' => $employee
-            ]);
+            ], 201);
 
         } catch (\Throwable $th) {
             return response()->json([
-                'status' => 400,
                 'message' => $th->getMessage()
-            ]);
+            ], 500);
         }
 
 
@@ -236,7 +226,8 @@ class EmployeeController extends Controller{
                 ], 404);
             }
 
-            if (Storage::delete('public/images/' . $employee->avatar)){
+            # 'public/images/' . 
+            if (Storage::delete( $employee->avatar)){
                 Employee::destroy($request->id);
             }
 
