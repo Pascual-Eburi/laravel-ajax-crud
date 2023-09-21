@@ -35,9 +35,8 @@ class EmployeeControllerTest extends TestCase
         
 
         $response = $this->json('POST', '/store', $data);
-        $response->assertStatus(200)
+        $response->assertStatus(201)
             ->assertJson([
-                'status' => 201,
                 'message' => 'Employee added successfully',
             ]);
 
@@ -75,7 +74,21 @@ class EmployeeControllerTest extends TestCase
                     ->assertUnprocessable();
     }
 
-
+    public function test_it_handles_internal_server_error_when_storing_employee(){
+        $employee = Employee::factory()->create();
+        $data = [
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'email' => $employee->email, // this must be a unique email
+            'phone' => $employee->phone, // this must be a unique phone number
+            'job_position' => $this->faker->jobTitle,
+            'date_hired' => $this->faker->date,
+            'avatar' => UploadedFile::fake()->image('avatar.jpg'),
+        ];
+        $this->json('POST', "/store" , $data)
+                    ->assertStatus(500)
+                    ->assertJson( fn (AssertableJson $json) => $json->has('message') );
+    }
     /**--------------------------------------------------------
      *  Show method tests
      *--------------------------------------*/
