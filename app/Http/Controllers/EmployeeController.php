@@ -46,7 +46,7 @@ class EmployeeController extends Controller{
         foreach ($employees as $employee){
             $index++;
             # storage/images/'
-            $photo = '<img src="' . asset('public/storage/' . $employee->avatar) . '" width="60" height="60" class="img-thumbnail rounded-circle" style="aspect-ratio:1/1;object-fit: cover;">';
+            $photo = '<img src="' . asset('public/' . $employee->avatar) . '" width="60" height="60" class="img-thumbnail rounded-circle" style="aspect-ratio:1/1;object-fit: cover;">';
             
             // buttons for actions
             // data-bs-toggle="modal" data-bs-target="#editEmployeeModal"
