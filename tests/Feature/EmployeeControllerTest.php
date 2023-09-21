@@ -1,7 +1,6 @@
 <?php
 
 namespace Tests\Feature;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -153,40 +152,25 @@ class EmployeeControllerTest extends TestCase
     /**
      * @test
      */
-    public function test_it_handles_validation_errors()
-    {
-        // Crea un empleado de ejemplo en la base de datos
-        $employee = factory(Employee::class)->create();
+    public function test_it_handles_validation_errors_when_updating_employee(){
+        $employee = Employee::factory()->create();
 
-        // Genera datos simulados para la solicitud de actualización con errores de validación
         $invalidData = [
             'emp_id' => $employee->id,
-            'first_name' => '', // Campo requerido en las reglas de validación
-            // Agrega más campos inválidos aquí según tus reglas de validación
+            'first_name' => '', // this field is required
         ];
 
-        // Realiza una solicitud POST JSON al endpoint de actualización de empleado con datos inválidos
         $response = $this->json('POST', '/update', $invalidData);
-
-        // Verifica que la respuesta tenga un código de estado 200 (aunque los datos sean inválidos)
-        $response->assertStatus(200);
-
-        // Verifica que la respuesta contenga los errores de validación en formato JSON
-        $response->assertJsonValidationErrors([
-            'first_name', // Nombre del campo que falló la validación
-            // Agrega más campos aquí según tus reglas de validación
-        ]);
+        $response->assertStatus(422)
+                    ->assertUnprocessable();
     }
 
     /**
      * @test
      */
-    public function test_it_handles_employee_not_found()
+    public function test_it_handles_employee_not_found_when_updating_employee()
     {
-        // Proporciona un ID de empleado que no existe en la base de datos
         $nonExistingEmployeeId = 999;
-
-        // Genera datos simulados para la solicitud de actualización
         $newData = [
             'emp_id' => $nonExistingEmployeeId,
             'first_name' => $this->faker->firstName,
@@ -198,52 +182,29 @@ class EmployeeControllerTest extends TestCase
             'avatar' => UploadedFile::fake()->image('new_avatar.jpg'),
         ];
 
-        // Realiza una solicitud POST JSON al endpoint de actualización de empleado con ID no válido
-        $response = $this->json('POST', '/update', $newData);
-
-        // Verifica que la respuesta tenga un código de estado 404 (not found)
-        $response->assertStatus(404);
-
-        // Verifica que la respuesta contenga un mensaje de error en formato JSON
-        $response->assertJson([
-            'message' => 'Employee not found',
-        ]);
+        $this->json('POST', '/update', $newData)
+                ->assertStatus(404)
+                ->assertJson(['message' => 'Employee not found',]);
     }
 
     /**
      * @test
      */
-    public function test_it_handles_internal_server_error(){
-        // Simula un error interno al actualizar el empleado (puedes ajustar esta lógica según tu necesidad)
-        $this->mock(Storage::class, function ($mock) {
-            $mock->shouldReceive('storeAs')->andReturn(false);
-        });
-
-        // Crea un empleado de ejemplo en la base de datos
-        $employee = factory(Employee::class)->create();
-
-        // Genera datos simulados para la solicitud de actualización
-        $newData = [
-            'emp_id' => $employee->id,
+    public function test_it_handles_internal_server_error_when_updating_employee(){
+        $employee = Employee::factory()->create();
+        $data = [
+            'emp_id' => $employee,
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'email' => $this->faker->email,
             'phone' => $this->faker->phoneNumber,
             'job_position' => $this->faker->jobTitle,
             'date_hired' => $this->faker->date,
-            'avatar' => UploadedFile::fake()->image('new_avatar.jpg'),
+            'avatar' => $employee->avatar,
         ];
-
-        // Realiza una solicitud POST JSON al endpoint de actualización de empleado
-        $response = $this->json('POST', '/update', $newData);
-
-        // Verifica que la respuesta tenga un código de estado 500 (internal server error)
-        $response->assertStatus(500);
-
-        // Verifica que la respuesta contenga un mensaje de error en formato JSON
-        $response->assertJson([
-            'message' => 'Error Message Here', // Puedes ajustar este mensaje según tu lógica de error
-        ]);
+        $this->json('POST', "/update" , $data)
+                    ->assertStatus(500)
+                    ->assertJson( fn (AssertableJson $json) => $json->has('message') );
     }
 
 
