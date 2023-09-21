@@ -17,13 +17,13 @@ class EmployeeFactory extends Factory
     public function definition(): array {
         return [
 
-            'first_name' => fake()->firstName,
-            'last_name' => fake()->lastName,
-            'email' => fake()->unique()->safeEmail,
-            'phone' => fake()->unique()->phoneNumber,
-            'job_position' => fake()->jobTitle,
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->unique()->phoneNumber(),
+            'job_position' => fake()->jobTitle(),
             'avatar' => 'default.jpg', // default avatar
-            'date_hired' => fake()->date,
+            'date_hired' => fake()->date(),
                 
         ];
     }
