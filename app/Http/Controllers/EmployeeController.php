@@ -97,8 +97,10 @@ class EmployeeController extends Controller{
             
         }
         
-
-        $path = $request->file('avatar')->store('avatars');
+        # $file = $reques->file('avatar');
+       
+        $path = $path = $request->photo->store('images', 's3');
+        //$request->file('avatar')->store('avatars');
 		$employeeData = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $path];
 		
         try {
