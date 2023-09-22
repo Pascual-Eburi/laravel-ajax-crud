@@ -186,6 +186,7 @@ class EmployeeController extends Controller{
         if ( $request->hasFile('avatar') ){
             
             $file_name = $request->file('avatar')->store('avatars');
+            $file_name = $request->photo->store('images', 'public');
             // delete old avatar in the storage
             if ( $employee->avatar ){
                 Storage::delete('public/avatars/'. $employee->avatar);
