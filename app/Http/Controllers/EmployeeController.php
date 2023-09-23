@@ -97,15 +97,19 @@ class EmployeeController extends Controller{
             
         }
         
-        # $file = $reques->file('avatar');
-       
-        $path = $path = $request->photo->store('images', 's3');
+        $file_name = $request->file('avatar')->hashName();
+
+        # $file->storeAs('public/images', $fileName);
+        $request->file('avatar')->storeAs(
+            'public/avatars', $file_name
+        );
+
         //$request->file('avatar')->store('avatars');
-		$employeeData = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $path];
+		$employeeData = ['first_name' => $request->first_name, 'last_name' => $request->last_name, 'email' => $request->email, 'phone' => $request->phone, 'job_position' => $request->job_position,'date_hired' => $request->date_hired, 'avatar' => $file_name];
 		
         try {
             
-            $employee = Employee::create($employeeData);
+            Employee::create($employeeData);
             return response()->json([
                 'message' => 'Employee added successfully',
             ], 201);
@@ -185,8 +189,15 @@ class EmployeeController extends Controller{
 
         if ( $request->hasFile('avatar') ){
             
-            $file_name = $request->file('avatar')->store('avatars');
-            $file_name = $request->photo->store('images', 'public');
+/*             $file_name = $request->file('avatar')->store('avatars');
+            $file_name = $request->photo->store('images', 'public'); */
+
+            $file_name = $request->file('avatar')->hashName();
+
+            # $file->storeAs('public/images', $fileName);
+            $request->file('avatar')->storeAs(
+                'public/avatars', $file_name
+            );
             // delete old avatar in the storage
             if ( $employee->avatar ){
                 Storage::delete('public/avatars/'. $employee->avatar);
@@ -230,7 +241,7 @@ class EmployeeController extends Controller{
             }
 
             # 'public/images/' . 
-            if (Storage::delete( $employee->avatar)){
+            if (Storage::delete( 'public/avatars/' . $employee->avatar)){
                 Employee::destroy($request->id);
             }
 
