@@ -48,13 +48,13 @@ class EmployeeControllerTest extends TestCase
             'phone' => $data['phone'],
             'job_position' => $data['job_position'],
             'date_hired' => $data['date_hired'],
-            'avatar' => 'avatars/' . $file_name
+            'avatar' => $file_name
         ]);
 
         $employee = Employee::first();
         $this->assertNotNull($employee->avatar);
-        Storage::disk('local')->assertExists($employee->avatar);
-        $this->assertFileEquals($file, Storage::disk('local')->path($employee->avatar) );
+        Storage::disk('local')->assertExists('public/avatars/' .$employee->avatar);
+        $this->assertFileEquals($file, Storage::disk('local')->path('public/avatars/'. $employee->avatar) );
 
 
     } 
@@ -173,10 +173,11 @@ class EmployeeControllerTest extends TestCase
             'id' => $employee->id,
             'email' => $newData['email'],
             'phone' => $newData['phone'],
-            'avatar' => 'avatars/' . $file_name
+            'avatar' => $file_name
         ]);
 
-        Storage::disk('local')->assertExists('avatars/' .$newData['avatar']->hashName());
+        # Storage::disk('local')->assertExists('avatars/' .$newData['avatar']->hashName());
+        Storage::disk('local')->assertExists('public/avatars/' .$file_name);
         Storage::disk('public')->assertMissing($employee->avatar);
     }
 
