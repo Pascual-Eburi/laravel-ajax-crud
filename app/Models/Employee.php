@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static find(mixed $id)
+ * @method static create(array $employeeData)
+ */
 class Employee extends Model{
     use HasFactory;
 
@@ -18,4 +22,5 @@ class Employee extends Model{
         'avatar',
         'date_hired'
     ];
+
 }
